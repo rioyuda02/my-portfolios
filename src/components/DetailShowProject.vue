@@ -36,7 +36,7 @@ const project_2 = [
           margin: 0;
           padding: 0 0.4rem;
           color: var(--color-text-link-1);
-          font-size: 1rem;
+          font-size: 1.2rem;
         "
         @click="modal1 = true"
       >
@@ -59,7 +59,7 @@ const project_2 = [
           margin: 0;
           padding: 0 0.4rem;
           color: var(--color-text-link-1);
-          font-size: 1rem;
+          font-size: 1.2rem;
         "
         @click="modal2 = true"
       >
@@ -68,19 +68,17 @@ const project_2 = [
     </el-timeline-item>
   </el-timeline>
 
-  <el-tour v-model="modal1">
-    <el-tour-step target="#btn-1" title="Upload File" description="Put you files here." />
-    <el-tour-step target="#btn-1" title="Save" description="Save your changes" />
-    <el-tour-step target="#btn-1" title="Other Actions" description="Click to see other" />
+  <el-tour v-model="modal1" close-icon target-area-clickable>
+    <el-tour-step target="#btn-1" title="About" description="Decentralize Application / Web3" />
+    <el-tour-step target="#btn-1" title="Technology" description="Lisk Network (Ethereum L2), Solidity, NextJS, Etherjs, Typescript, Foundry." />
+    <el-tour-step target="#btn-1" title="Explore to" description="https://xottle.asia"/>
   </el-tour>
 
-  <el-tour v-model="modal2">
-    <el-tour-step
-      target="#btn-2"
-      title="Solana Instagram"
-      description="Web3 Build with rust and Solana Network"
+  <el-tour v-model="modal2" close-icon target-area-clickable>
+    <el-tour-step target="#btn-2" title="About"
+      description="Solana Instagram is a Web3 on Solana Network"
     />
-    <el-tour-step target="#btn-2" title="Save" description="Save your changes" />
-    <el-tour-step target="#btn-2" title="Other Actions" description="Click to see other" />
+    <el-tour-step target="#btn-2" title="Technology" description="Solana Network, Rust, NextJS, Typescript" />
+    <el-tour-step target="#btn-2" title="Explore to" description="https://instagramsol-dapp-rioyuda02.vercel.app" />
   </el-tour>
 </template>

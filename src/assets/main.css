@@ -85,6 +85,9 @@ h3 {
 .el-dialog__body {
   text-align: center !important;
 }
+.icon-mid {
+  color: var(--color-text-link-1);
+}
 
 @media (hover: hover) {
   a:hover {

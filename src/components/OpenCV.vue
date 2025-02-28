@@ -95,7 +95,7 @@ const route = useRoute()
 const Notify_page = () => {
   ElNotification.success({
     title: 'Already',
-    message: h('i', { style: 'color: teal' }, 'Openend my CV'),
+    message: h('i', { style: 'color: teal' }, 'Openend My CV'),
     offset: 100,
     duration: 1200,
   })
@@ -105,7 +105,6 @@ const Pop_Show = () => {
   if (route.path !== '/my-cv') {
     dialogVisible.value = true
   } else {
-    dialogVisible.value = false
     Notify_page()
   }
 }
@@ -114,15 +113,14 @@ const Pop_Show = () => {
 <template>
   <el-button plain @click="Pop_Show" style="color: var(--color-text-link-1)"> CV </el-button>
 
-  <el-dialog v-model="dialogVisible" tittle="Curriculum Vitae" width="450" draggable>
+  <el-dialog v-model="dialogVisible" tittle="Curriculum Vitae" width="fit-content" draggable>
     <span> Thank you for your interest in my CV</span>
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
         <RouterLink to="/my-cv" style="background: none">
           <el-button type="primary" @click="(getAndStoreClientIp(),getLastStoredIp(), (dialogVisible = false))"
-            >View</el-button
-          >
+            >View</el-button>
         </RouterLink>
       </div>
     </template>

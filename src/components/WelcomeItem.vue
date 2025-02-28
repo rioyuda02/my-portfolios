@@ -1,6 +1,6 @@
 <template>
-  <div class="item">
-    <i>
+  <div  id="item" class="item">
+    <i id="icons">
       <slot name="icon"></slot>
     </i>
     <div class="details">
@@ -25,14 +25,13 @@
   font-size: 0.85rem;
 }
 
-i {
+#icons {
   display: flex;
   place-items: center;
   place-content: center;
   width: 32px;
   height: 32px;
-
-  color: var(--color-text);
+  color: var(--color-text-link-1);
 }
 
 h3 {
@@ -48,7 +47,7 @@ h3 {
     padding: 0.4rem 0 1rem calc(var(--section-gap) / 2);
   }
 
-  i {
+  #icons {
     top: calc(50% - 25px);
     left: -26px;
     position: absolute;
@@ -58,23 +57,24 @@ h3 {
     width: 50px;
     height: 50px;
   }
+  #icons:hover {
+    box-shadow: var(--box-shadow);
+  }
 
-  .item:before {
+  .item:before, .item:after{
     content: ' ';
-    border-left: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-text-link-1);
     position: absolute;
     left: 0;
-    bottom: calc(50% + 25px);
     height: calc(50% - 25px);
   }
 
+  .item:before {
+    bottom: calc(50% + 25px);
+  }
+
   .item:after {
-    content: ' ';
-    border-left: 1px solid var(--color-border);
-    position: absolute;
-    left: 0;
     top: calc(50% + 25px);
-    height: calc(50% - 25px);
   }
 
   .item:first-of-type:before {

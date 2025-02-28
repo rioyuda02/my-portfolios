@@ -2,7 +2,8 @@
 import { RouterLink, RouterView } from 'vue-router'
 import MainProfile from './components/MainProfile.vue'
 import OpenCV from './components/OpenCV.vue'
-import CountingCV from './components/CountingCV.vue'
+import CountingCV from './components/CountingCV.vue';
+
 </script>
 
 <template>
@@ -10,14 +11,12 @@ import CountingCV from './components/CountingCV.vue'
     <img alt="i-profile" class="i-profile" src="./assets/i-profile.png" />
 
     <div class="wrapper">
-      <MainProfile msg="Hello, " />
-      <nav>
+      <MainProfile msg="Hi," />
+      <nav class="flex w-full">
         <RouterLink to="/">Home</RouterLink>
         <OpenCV />
-      </nav>
-      <div class="flex text-center w-full">
         <CountingCV />
-      </div>
+      </nav>
     </div>
   </header>
 

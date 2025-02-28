@@ -20,6 +20,7 @@
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
   --vt-c-text-green-link-1: hsla(160, 100%, 37%, 1);
+  --box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* semantic color variables for this project */
@@ -37,6 +38,7 @@
 
   --section-gap: 160px;
 }
+
 
 @media (prefers-color-scheme: dark) {
   :root {
