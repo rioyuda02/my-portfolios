@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WelcomeItem from './WelcomeItem.vue'
+import ProjectItem from './MyPorject-Item.vue'
 import DocumentationIcon from './icons/IconDocumentation.vue'
 import ToolingIcon from './icons/IconTooling.vue'
 import CommunityIcon from './icons/IconCommunity.vue'
@@ -12,7 +12,8 @@ const tableData1 = [
       ' NextJS ' +
       ' VueJS ' +
       ' ReactJS ' +
-      ' NuxtJS ' +
+      ' Javascript ' +
+      ' Typescript ' +
       ' Vite ' +
       ' TailwindCSS ' +
       ' Bootstrap ' +
@@ -23,8 +24,6 @@ const tableData1 = [
 const tableData2 = [
   {
     Be:
-      ' Javascript ' +
-      ' Typescript ' +
       ' NodeJS ' +
       ' ExpressJS ' +
       ' MongoDB ' +
@@ -36,29 +35,21 @@ const tableData2 = [
 ]
 const tableData3 = [
   {
-    Bc: ' Foundry ' + ' Hardhat ' + ' Move ' + ' EtherJs ' + ' Solidity ' + ' Web3JS ',
+    Bc: ' Foundry ' + ' Hardhat ' + ' Move ' + ' EtherJs ' + ' Solidity ' + ' Rust ' + ' Web3JS ',
   },
 ]
 </script>
 
 <template>
-  <WelcomeItem>
+  <ProjectItem>
     <template #icon>
       <DocumentationIcon />
     </template>
     <template #heading>My Project</template>
     <DetailShowProject />
-    <!-- <li>
-      <a href="https://instagramsol-dapp-rioyuda02.vercel.app/">SolGram</a>
-    </li> -->
-    <!-- is a Dapp and web3 project. It is a project that is built on top of the NextJS, EtherJS,
-    Foundry.<br />
-    It aims to provide a simple and easy-to-use interface for users to interact with the blockchain.
-    <a href="https://xottle.asia/" target="_blank" rel="noopener">This is official web</a>to explore
-    the project. -->
-  </WelcomeItem>
+  </ProjectItem>
 
-  <WelcomeItem>
+  <ProjectItem>
     <template #icon>
       <ToolingIcon />
     </template>
@@ -77,17 +68,17 @@ const tableData3 = [
         <el-table-column prop="Bc" label="Blockchain"></el-table-column>
       </el-table>
     </template>
-  </WelcomeItem>
+  </ProjectItem>
 
-  <WelcomeItem>
+  <ProjectItem>
     <template #icon>
       <CommunityIcon />
     </template>
     <template #heading>Hire Me</template>
     rio.yudayanto244@gmail.com
-  </WelcomeItem>
+  </ProjectItem>
 
-  <WelcomeItem>
+  <ProjectItem>
     <template #icon>
       <SupportIcon />
     </template>
@@ -98,5 +89,5 @@ const tableData3 = [
       >
     </li>
     <li><a href="https://www.instagram.com/rioyuda04/#" rel="noopener noreferrer">Instagram</a></li>
-  </WelcomeItem>
+  </ProjectItem>
 </template>
