@@ -3,7 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import MainProfile from './components/MainProfile.vue'
 import OpenCV from './components/OpenCV.vue'
 import CountingCV from './components/CountingCV.vue'
-import Navbar from './components/navbar.vue'
+import Navbar from './components/Navbar.vue'
 </script>
 
 <template>

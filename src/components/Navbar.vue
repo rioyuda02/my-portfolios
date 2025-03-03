@@ -5,7 +5,7 @@
 
     const isDark = useDark()
     const activeIndex = ref('1')
-    const handleSelect = (key:string, keyPath: string[]) => {}
+    const handleSelect = (key:string, keyPath: string[]) => {console.info(key, keyPath)}
 </script>
 
 <template>
