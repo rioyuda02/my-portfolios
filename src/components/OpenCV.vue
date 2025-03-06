@@ -111,7 +111,7 @@ const Pop_Show = () => {
 </script>
 
 <template>
-  <el-button plain @click="Pop_Show" class=" dark:bg-none"> CV/Resume </el-button>
+  <el-button plain @click="Pop_Show" class="flex"> CV/Resume </el-button>
 
   <el-dialog v-model="dialogVisible" tittle="Curriculum Vitae" width="fit-content" draggable>
     <span> Thank you for your interest in my CV</span>

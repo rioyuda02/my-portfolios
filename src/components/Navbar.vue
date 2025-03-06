@@ -13,10 +13,10 @@
         <div class="flex">
             <el-menu :default-active="activeIndex" :ellipsis="false"
                 class="el-menu-demo flex w-full" 
-                mode="horizontal" active-text-color="Teal" 
+                mode="horizontal" active-text-color='var(--color-text-link-1)' 
                 @select="handleSelect">
                 <RouterLink to="/" >
-                    <el-menu-item class="border-transparent dark:bg-none" index="1">Home</el-menu-item>
+                    <el-menu-item class="border-transparent" index="1">Home</el-menu-item>
                 </RouterLink>
             </el-menu>
         </div>

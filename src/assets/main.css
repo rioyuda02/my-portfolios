@@ -33,7 +33,10 @@
 /* End */
 
 .el-menu, .el-button {
-  background-color: transparent!important;
+  background: transparent!important;
+}
+.el-button{
+  color: var(--color-text-link-1)!important;
 }
 
 #app {
