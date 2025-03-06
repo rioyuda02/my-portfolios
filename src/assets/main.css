@@ -32,6 +32,9 @@
 .dark .el-form-item label{
   color: var(--vt-c-white-soft);
 }
+.dark .el-tour__body {
+  color: teal!important;
+}
 /* End */
 
 .el-menu, .el-button {
