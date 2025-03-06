@@ -24,7 +24,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const externalRoute = to.path.substring(0)
+  const externalRoute = to.path.substring(1)
 
   if (externalLinks[externalRoute] || externalLinks[from.path]) {
     window.open(externalLinks[externalRoute], '_blank')
