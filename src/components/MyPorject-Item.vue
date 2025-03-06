@@ -33,6 +33,10 @@
   height: 32px;
   color: var(--color-text-link-1);
 }
+.dark #icons{
+  border-color: gainsboro;
+  background-color: transparent;
+}
 
 h3 {
   font-size: 1.2rem;

@@ -5,9 +5,7 @@ const { count } = Counter()
 </script>
 
 <template>
-  <div style="margin-top: 2rem;">
-    <p style="font-size: medium;">
+    <p class="text-base">
       <span>CV Viewed {{ count }} times</span>
     </p>
-  </div>
 </template>

@@ -1,54 +1,32 @@
 <script lang="ts" setup>
     import { ref } from 'vue';
-    import { useDark } from '@vueuse/core';
-    import { ElSwitch } from 'element-plus';
     import { RouterLink } from 'vue-router';
+    import { useTheme } from '../composables/useTheme';
 
-    const isDark = useDark()
+    const {isDark} = useTheme()
     const activeIndex = ref('1')
     const handleSelect = (key:string, keyPath: string[]) => {console.info(key, keyPath)}
 </script>
 
 <template>
-    <div id="top">
-        <div class="navBar">
+    <div class="flex w-75 justify-center items-center">
+        <div class="flex">
             <el-menu :default-active="activeIndex" :ellipsis="false"
                 class="el-menu-demo flex w-full" 
                 mode="horizontal" active-text-color="Teal" 
                 @select="handleSelect">
-                <RouterLink to="/">
-                    <el-menu-item index="1">Home</el-menu-item>
+                <RouterLink to="/" >
+                    <el-menu-item class="border-transparent dark:bg-none" index="1">Home</el-menu-item>
                 </RouterLink>
-
-
             </el-menu>
         </div>
-        <div class="btn_tm">
-            <ElSwitch v-model="isDark" />
-            <span style="margin-left: 0.4rem;">{{ isDark ? 'Dark' : 'Light' }}</span>
+        <div class="flex gap-2 items-center justify-end w-full">
+            <el-switch v-model="isDark"  
+                active-color="#409EFF"
+                inactive-color="#DCDFE6"
+                class="flex"
+            />
+            <span class="flex dark:text-gray-200">{{ isDark ? 'Dark' : 'Light' }}</span>
         </div>
     </div>
-
 </template>
-
-<style scoped>
-    #top{
-        display: flex;
-        width: 100%;
-        height: auto;
-    }
-    .navBar{
-        display: flex;
-        width: 100%;
-        height: auto;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .btn_tm{
-        width: 20%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-</style>
