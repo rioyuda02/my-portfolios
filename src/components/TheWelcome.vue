@@ -55,7 +55,7 @@ const tableData3 = [
     </template>
 
     <template #heading>
-      <label for="heading">Tools & Program Languge</label>
+      <label for="heading">Tools & Programming Language</label>
       <el-table :data="tableData1" border>
         <el-table-column prop="Ft" label="Frontend"></el-table-column>
       </el-table>
