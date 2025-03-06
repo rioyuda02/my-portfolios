@@ -29,7 +29,9 @@
   overflow: hidden;
   transition: all 0.3s ease;
 }
-
+.dark .el-form-item label{
+  color: var(--vt-c-white-soft);
+}
 /* End */
 
 .el-menu, .el-button {
