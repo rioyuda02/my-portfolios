@@ -8,12 +8,12 @@ import Navbar from './components/Navbar.vue'
 
 <template>
   <header>
-    <Navbar style="display: flex; width: 100%;"/>
+    <Navbar/>
     <img alt="i-profile" class="i-profile" src="./assets/i-profile.png" />
     <div class="wrapper">
       <MainProfile msg="Hi," />
       <nav class="flex w-full">
-        <RouterLink to="/">GitHub</RouterLink>
+        <RouterLink to="/github">GitHub</RouterLink>
         <OpenCV />
         <CountingCV />
       </nav>
