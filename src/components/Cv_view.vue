@@ -50,20 +50,23 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      Notify_page()
+      Notify_page(formEl)
     } else {
       console.log('error submit!', fields)
     }
   })
 }
 
-const Notify_page = () => {
+const Notify_page = async (formEl: FormInstance | undefined) => {
   ElNotification.success({
     title: 'Processed',
     message: h('i', { style: 'color: teal' }, 'Thank you! Mr/Ms,'),
     offset: 100,
     duration: 1900,
   })
+  setTimeout(()=>{
+    formEl?.resetFields()
+  }, 2300)
 }
 </script>
 
@@ -111,7 +114,7 @@ const Notify_page = () => {
     </el-form-item>
 
     <el-form-item label="Reason" prop="desc">
-      <el-input v-model="ruleForm.desc" type="textarea" />
+      <el-input v-model="ruleForm.desc" type="textarea" placeholder="Reason"/>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm(ruleFormRef)">
