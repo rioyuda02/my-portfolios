@@ -1,46 +1,3 @@
-<template>
-  <div class="about">
-  <el-form
-    ref="ruleFormRef"
-    style="width: fit-content;"
-    :model="ruleForm"
-    :rules="rules"
-    label-width="auto"
-    class="demo-ruleForm"
-    :size="formSize"
-    status-icon
-  >
-    <el-form-item label="Name of Institution" prop="name">
-      <el-input v-model="ruleForm.name" placeholder="Company"/>
-    </el-form-item>
-
-    <el-form-item label="Regional" prop="region">
-      <el-select v-model="ruleForm.region" placeholder="Region">
-        <el-option label="Indonesia" value="Indonesia" />
-        <el-option label="Singapore" value="Singapore" />
-        <el-option label="Canada" value="Canada" />
-        <el-option label="US" value="Unites Stated" />
-        <el-option label="Australia" value="Australia" />
-        <el-option label="Czech Republic" value="Ceko" />
-        <el-option label="Other Country" value="Other" />
-      </el-select>
-    </el-form-item>
-
-    <el-form-item label="Reason" prop="desc">
-      <el-input v-model="ruleForm.desc" type="textarea" />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitForm(ruleFormRef)">
-        Request..
-      </el-button>
-      <RouterLink to="/">
-        <el-button>Cancel</el-button>
-      </RouterLink>
-    </el-form-item>
-  </el-form>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { reactive, ref, h } from 'vue'
 import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
@@ -49,16 +6,27 @@ import { ElNotification } from 'element-plus'
 
 interface RuleForm {
   name: string
+  email: string
   region: string
   desc: string
+  domains: DomainItem[]
+}
+interface DomainItem{
+  key: number
+  value: string
 }
 
 const formSize = ref<ComponentSize>('default')
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive<RuleForm>({
   name: '',
+  email: '',
   region: '',
   desc: '',
+  domains: [{
+    key: 1,
+    value: '',
+  }],
 })
 
 const rules = reactive<FormRules<RuleForm>>({
@@ -97,9 +65,65 @@ const Notify_page = () => {
     duration: 1900,
   })
 }
-
-
 </script>
+
+<template>
+  <div class="about">
+  <el-form
+    ref="ruleFormRef"
+    style="width: 100%;"
+    :model="ruleForm"
+    :rules="rules"
+    label-width="auto"
+    class="demo-ruleForm"
+    :size="formSize"
+    status-icon
+  >
+    <el-form-item label="Name of Institution" prop="name">
+      <el-input v-model="ruleForm.name" placeholder="Company"/>
+    </el-form-item>
+
+    <el-form-item prop="email" label="Email"
+    :rules="[{
+        required: true,
+        message: 'Please input email address',
+        trigger: 'blur',
+      },
+      {
+        type: 'email',
+        message: 'please input correct email address',
+        trigger: ['blur', 'change'],
+      },
+    ]">
+      <el-input v-model="ruleForm.email" placeholder="Email"/>
+    </el-form-item>
+
+    <el-form-item label="Regional" prop="region">
+      <el-select v-model="ruleForm.region" placeholder="Region">
+        <el-option label="Indonesia" value="Indonesia" />
+        <el-option label="Singapore" value="Singapore" />
+        <el-option label="Canada" value="Canada" />
+        <el-option label="US" value="Unites Stated" />
+        <el-option label="Australia" value="Australia" />
+        <el-option label="Czech Republic" value="Ceko" />
+        <el-option label="Other Country" value="Other" />
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="Reason" prop="desc">
+      <el-input v-model="ruleForm.desc" type="textarea" />
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submitForm(ruleFormRef)">
+        Request..
+      </el-button>
+      <RouterLink to="/">
+        <el-button>Cancel</el-button>
+      </RouterLink>
+    </el-form-item>
+  </el-form>
+  </div>
+</template>
 
 <style>
 @media (min-width: 1024px) {
