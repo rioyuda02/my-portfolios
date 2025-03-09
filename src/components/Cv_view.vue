@@ -3,6 +3,7 @@ import { reactive, ref, h } from 'vue'
 import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
 import { RouterLink } from 'vue-router'
 import { ElNotification } from 'element-plus'
+import VueTurnstile from 'vue-turnstile'
 
 interface RuleForm {
   name: string
@@ -29,6 +30,33 @@ const ruleForm = reactive<RuleForm>({
   }],
 })
 
+const turnstileToken = ref('')
+const isCaptchaVerified = ref(false)
+const captchaError = ref('')
+const isSubmitting = ref(false)
+
+// Update this with your Cloudflare Worker URL
+const captchaVerifierUrl = 'https://captcha-verifier.rio-yudayanto244.workers.dev'
+const siteKey =  import.meta.env.VITE_CLOUDFLARE_SITE_KEY // Use test key as fallback
+
+const onVerified = (token: string) => {
+  turnstileToken.value = token
+  isCaptchaVerified.value = true
+  captchaError.value = ''
+}
+
+const onExpired = () => {
+  turnstileToken.value = ''
+  isCaptchaVerified.value = false
+  captchaError.value = 'CAPTCHA expired. Please try again!'
+}
+
+const onError = (error: string) => {
+  turnstileToken.value = ''
+  isCaptchaVerified.value = false
+  captchaError.value = `CAPTCHA error: ${error}`
+}
+
 const rules = reactive<FormRules<RuleForm>>({
   name: [
     { required: true, message: 'Please input Company Name', trigger: 'blur' },
@@ -48,9 +76,49 @@ const rules = reactive<FormRules<RuleForm>>({
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+
+  // Fix: Add return statement to prevent form submission when CAPTCHA is not verified
+  if (!isCaptchaVerified.value) {
+    captchaError.value = 'Please complete the CAPTCHA verification'
+    return
+  }
+
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
-      Notify_page(formEl)
+      try {
+        isSubmitting.value = true
+        
+        // Verify CAPTCHA token with Cloudflare Worker
+        const verifyResponse = await fetch(captchaVerifierUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: turnstileToken.value })
+        });
+        
+        const verifyResult = await verifyResponse.json();
+        
+        if (!verifyResult.success) {
+          captchaError.value = 'CAPTCHA verification failed: ' + (verifyResult.message || 'Please try again')
+          isSubmitting.value = false
+          return
+        }
+        
+        // CAPTCHA is valid, prepare form data
+        const formData = {
+          ...ruleForm,
+          captchaToken: turnstileToken.value
+        }
+        
+        console.log('Form submitted with data:', formData)
+        Notify_page(formEl)
+      } catch (error) {
+        console.error('Submission error:', error)
+        captchaError.value = 'An error occurred while processing your request'
+      } finally {
+        isSubmitting.value = false
+      }
     } else {
       console.log('error submit!', fields)
     }
@@ -66,6 +134,9 @@ const Notify_page = async (formEl: FormInstance | undefined) => {
   })
   setTimeout(()=>{
     formEl?.resetFields()
+    // Reset CAPTCHA state
+    turnstileToken.value = ''
+    isCaptchaVerified.value = false
   }, 2300)
 }
 </script>
@@ -114,21 +185,41 @@ const Notify_page = async (formEl: FormInstance | undefined) => {
     </el-form-item>
 
     <el-form-item label="Reason" prop="desc">
-      <el-input v-model="ruleForm.desc" type="textarea" placeholder="Reason"/>
+      <el-input v-model="ruleForm.desc" type="textarea" />
     </el-form-item>
+
+    <!-- CAPTCHA -->
+     <el-form-item label="Verification">
+      <div class="captcha-container">
+        <vue-turnstile 
+          v-model="turnstileToken" 
+          :site-key="siteKey" 
+          @verified="onVerified" 
+          @expired="onExpired" 
+          @error="onError"
+        />
+        <div v-if="captchaError" class="captcha-error">{{ captchaError }}</div>
+      </div>
+     </el-form-item>
+
     <el-form-item>
-      <el-button type="primary" @click="submitForm(ruleFormRef)">
-        Request..
+      <el-button 
+        type="primary" 
+        @click="submitForm(ruleFormRef)"
+        :loading="isSubmitting"
+        :disabled="isSubmitting"
+      >
+        {{ isSubmitting ? 'Processing...' : 'Request..' }}
       </el-button>
       <RouterLink to="/">
-        <el-button>Cancel</el-button>
+        <el-button :disabled="isSubmitting">Cancel</el-button>
       </RouterLink>
     </el-form-item>
   </el-form>
   </div>
 </template>
 
-<style>
+<style scoped>
 @media (min-width: 1024px) {
   .about {
     min-height: 100vh;
@@ -156,5 +247,15 @@ const Notify_page = async (formEl: FormInstance | undefined) => {
     justify-content: center;
     margin-left: 0!important;
   }
+}
+
+/* Move these out of the media query so they're always applied */
+.captcha-container{
+  margin: 10px 0;
+}
+.captcha-error {
+  color: rgb(208, 8, 8);
+  margin-top: 5px;
+  font-size: 0.85rem;
 }
 </style>

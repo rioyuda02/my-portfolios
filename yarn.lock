@@ -1215,6 +1215,11 @@ vue-tsc@^2.2.4:
     "@volar/typescript" "~2.4.11"
     "@vue/language-core" "2.2.4"
 
+vue-turnstile@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.npmjs.org/vue-turnstile/-/vue-turnstile-1.0.11.tgz"
+  integrity sha512-iaTBoZ5oUqtNRto6bmbn6FQvW0h/sK7mPUJc1Qn4em+cELXN59U2FQTcpWfKssV3OY6lEZzmCpcn/zrb7htK3A==
+
 vue@^3.5.13:
   version "3.5.13"
   resolved "https://registry.npmjs.org/vue/-/vue-3.5.13.tgz"

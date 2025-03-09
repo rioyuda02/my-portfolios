@@ -1,0 +1,3 @@
+name = "captcha-verifier"
+main = "src/index.js"
+compatibility_date = "2025-02-02"
