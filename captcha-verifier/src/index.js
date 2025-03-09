@@ -1,8 +1,6 @@
-// worker.js
-
 // Configure CORS headers
 const corsHeaders = {
-	'Access-Control-Allow-Origin': '*', // Or specify your domain
+	'Access-Control-Allow-Origin': '*', // You may want to restrict this to your website's domain
 	'Access-Control-Allow-Methods': 'POST, OPTIONS',
 	'Access-Control-Allow-Headers': 'Content-Type',
   };
@@ -15,18 +13,23 @@ const corsHeaders = {
 	});
   }
 
-  async function validateTurnstileToken(token, secretKey, ip) {
+  // Function to validate Turnstile token with Cloudflare
+  async function validateTurnstileToken(token, secretKey) {
 	const formData = new FormData();
 	formData.append('secret', secretKey);
 	formData.append('response', token);
-	if (ip) formData.append('remoteip', ip);
 
-	const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-	  method: 'POST',
-	  body: formData,
-	});
+	try {
+	  const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+		method: 'POST',
+		body: formData,
+	  });
 
-	return await result.json();
+	  return await result.json();
+	} catch (error) {
+	  console.error('Turnstile validation error:', error);
+	  return { success: false, 'error-codes': ['validation-fetch-failed'] };
+	}
   }
 
   async function handleRequest(request, env) {
@@ -35,25 +38,29 @@ const corsHeaders = {
 	  return handleOptions();
 	}
 
+	// Only allow POST requests
 	if (request.method !== 'POST') {
-	  return new Response('Method not allowed', {
+	  return new Response(JSON.stringify({
+		success: false,
+		message: 'Method not allowed',
+	  }), {
 		status: 405,
 		headers: {
 		  ...corsHeaders,
+		  'Content-Type': 'application/json',
 		  'Allow': 'POST, OPTIONS',
 		},
 	  });
 	}
 
 	try {
-	  // Parse request body
 	  const body = await request.json();
-	  const { turnstileToken, ...formData } = body;
+	  const { token } = body;
 
-	  // Get client IP (optional)
 	  const clientIP = request.headers.get('CF-Connecting-IP');
 
-	  if (!turnstileToken) {
+	  // Check if token exists
+	  if (!token) {
 		return new Response(JSON.stringify({
 		  success: false,
 		  message: 'Missing Turnstile token',
@@ -67,13 +74,11 @@ const corsHeaders = {
 	  }
 
 	  // Validate token with Turnstile
-	  const validation = await validateTurnstileToken(
-		turnstileToken,
-		TURNSTILE_SECRET_KEY, // Set in your Worker environment variables
-		clientIP
-	  );
+	  const secretKey = TURNSTILE_SECRET_KEY;
+	  const validation = await validateTurnstileToken(token, secretKey);
 
 	  if (!validation.success) {
+		// Token validation failed
 		return new Response(JSON.stringify({
 		  success: false,
 		  message: 'Turnstile validation failed',
@@ -87,13 +92,10 @@ const corsHeaders = {
 		});
 	  }
 
-	  // Token is valid, process form submission
-	  // Add your form processing logic here
-	  // For example, send an email, store in database, etc.
-
+	  // Token is valid
 	  return new Response(JSON.stringify({
 		success: true,
-		message: 'Form submitted successfully',
+		message: 'Turnstile validation successful',
 	  }), {
 		status: 200,
 		headers: {
@@ -103,6 +105,7 @@ const corsHeaders = {
 	  });
 
 	} catch (error) {
+	  // Handle any errors
 	  return new Response(JSON.stringify({
 		success: false,
 		message: 'Server error: ' + error.message,
@@ -116,8 +119,9 @@ const corsHeaders = {
 	}
   }
 
+  // Export the handler function
   export default {
-	async fetch(request, env, ctx) {
+	async fetch(request, env) {
 	  return handleRequest(request, env);
 	},
   };
