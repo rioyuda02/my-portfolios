@@ -1,11 +1,13 @@
-// Configure CORS headers
+// worker.js for Cloudflare Worker
+
+// Configure CORS headers to allow requests from any origin (you may want to restrict this in production)
 const corsHeaders = {
-	'Access-Control-Allow-Origin': '*', // You may want to restrict this to your website's domain
+	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'POST, OPTIONS',
 	'Access-Control-Allow-Headers': 'Content-Type',
   };
 
-  // Handle OPTIONS request (preflight)
+  // Handler for OPTIONS requests (CORS preflight)
   function handleOptions() {
 	return new Response(null, {
 	  status: 204,
@@ -13,115 +15,123 @@ const corsHeaders = {
 	});
   }
 
-  // Function to validate Turnstile token with Cloudflare
+  // Function to validate the Turnstile token
   async function validateTurnstileToken(token, secretKey) {
+	// Create form data for the verification request
 	const formData = new FormData();
 	formData.append('secret', secretKey);
 	formData.append('response', token);
 
 	try {
-	  const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+	  // Make the request to Cloudflare's verification endpoint
+	  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
 		method: 'POST',
 		body: formData,
 	  });
 
-	  return await result.json();
+	  // Parse and return the result
+	  return await response.json();
 	} catch (error) {
 	  console.error('Turnstile validation error:', error);
-	  return { success: false, 'error-codes': ['validation-fetch-failed'] };
+	  return {
+		success: false,
+		'error-codes': ['validation-fetch-failed']
+	  };
 	}
   }
 
-  async function handleRequest(request, env) {
-	// Handle preflight requests
-	if (request.method === 'OPTIONS') {
-	  return handleOptions();
-	}
+  // Main worker handler
+  export default {
+	async fetch(request, env, ctx) {
+	  // Log the request method for debugging
+	  console.log('Request method:', request.method);
 
-	// Only allow POST requests
-	if (request.method !== 'POST') {
-	  return new Response(JSON.stringify({
-		success: false,
-		message: 'Method not allowed',
-	  }), {
-		status: 405,
-		headers: {
-		  ...corsHeaders,
-		  'Content-Type': 'application/json',
-		  'Allow': 'POST, OPTIONS',
-		},
-	  });
-	}
+	  // Handle CORS preflight requests
+	  if (request.method === 'OPTIONS') {
+		return handleOptions();
+	  }
 
-	try {
-	  const body = await request.json();
-	  const { token } = body;
-
-	  const clientIP = request.headers.get('CF-Connecting-IP');
-
-	  // Check if token exists
-	  if (!token) {
+	  // Only process POST requests
+	  if (request.method !== 'POST') {
 		return new Response(JSON.stringify({
 		  success: false,
-		  message: 'Missing Turnstile token',
+		  message: `Method ${request.method} not allowed. Only POST is accepted.`,
 		}), {
-		  status: 400,
+		  status: 405,
 		  headers: {
 			...corsHeaders,
 			'Content-Type': 'application/json',
+			'Allow': 'POST, OPTIONS',
 		  },
 		});
 	  }
 
-	  // Validate token with Turnstile
-	  const secretKey = TURNSTILE_SECRET_KEY;
-	  const validation = await validateTurnstileToken(token, secretKey);
+	  try {
+		// Parse the request body
+		const body = await request.json();
 
-	  if (!validation.success) {
-		// Token validation failed
+		// Log the received token for debugging (omit in production)
+		console.log('Received token:', body.token ? 'Present' : 'Missing');
+
+		// Check if token exists
+		if (!body.token) {
+		  return new Response(JSON.stringify({
+			success: false,
+			message: 'Missing Turnstile token',
+		  }), {
+			status: 400,
+			headers: {
+			  ...corsHeaders,
+			  'Content-Type': 'application/json',
+			},
+		  });
+		}
+
+		// Get the secret key from environment variables
+		const secretKey = env.TURNSTILE_SECRET_KEY;
+
+		// Ensure secret key is configured
+		if (!secretKey) {
+		  return new Response(JSON.stringify({
+			success: false,
+			message: 'Server configuration error: Missing secret key',
+		  }), {
+			status: 500,
+			headers: {
+			  ...corsHeaders,
+			  'Content-Type': 'application/json',
+			},
+		  });
+		}
+
+		// Validate the token
+		const validation = await validateTurnstileToken(body.token, secretKey);
+
+		// Return the validation result
 		return new Response(JSON.stringify({
-		  success: false,
-		  message: 'Turnstile validation failed',
+		  success: validation.success,
+		  message: validation.success ? 'Verification successful' : 'Verification failed',
 		  errors: validation['error-codes'],
 		}), {
-		  status: 400,
+		  status: validation.success ? 200 : 400,
+		  headers: {
+			...corsHeaders,
+			'Content-Type': 'application/json',
+		  },
+		});
+	  } catch (error) {
+		// Handle any errors
+		console.error('Worker error:', error);
+		return new Response(JSON.stringify({
+		  success: false,
+		  message: 'Server error: ' + error.message,
+		}), {
+		  status: 500,
 		  headers: {
 			...corsHeaders,
 			'Content-Type': 'application/json',
 		  },
 		});
 	  }
-
-	  // Token is valid
-	  return new Response(JSON.stringify({
-		success: true,
-		message: 'Turnstile validation successful',
-	  }), {
-		status: 200,
-		headers: {
-		  ...corsHeaders,
-		  'Content-Type': 'application/json',
-		},
-	  });
-
-	} catch (error) {
-	  // Handle any errors
-	  return new Response(JSON.stringify({
-		success: false,
-		message: 'Server error: ' + error.message,
-	  }), {
-		status: 500,
-		headers: {
-		  ...corsHeaders,
-		  'Content-Type': 'application/json',
-		},
-	  });
-	}
-  }
-
-  // Export the handler function
-  export default {
-	async fetch(request, env) {
-	  return handleRequest(request, env);
 	},
   };
