@@ -36,8 +36,8 @@ const captchaError = ref('')
 const isSubmitting = ref(false)
 
 // Update this with your Cloudflare Worker URL
-const captchaVerifierUrl = 'https://captcha-verifier.rio-yudayanto244.workers.dev/'
-const siteKey =  import.meta.env.VITE_CLOUDFLARE_SITE_KEY // Use test key as fallback
+const captchaVerifierUrl = import.meta.env.VITE_BACKEND_URL
+const siteKey =  import.meta.env.VITE_TURNSTILE_SITE_KEY // Use test key as fallback
 
 const onVerified = (token: string) => {
   turnstileToken.value = token
