@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     CountingCV: typeof import('./src/components/CountingCV.vue')['default']
     Cv_view: typeof import('./src/components/Cv_view.vue')['default']
+    Cv_view2: typeof import('./src/components/Cv_view2.vue')['default']
     DetailShowProject: typeof import('./src/components/DetailShowProject.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElDialog: typeof import('element-plus/es')['ElDialog']
