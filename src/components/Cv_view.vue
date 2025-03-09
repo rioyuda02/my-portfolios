@@ -36,8 +36,22 @@ const captchaError = ref('')
 const isSubmitting = ref(false)
 
 // Update this with your Cloudflare Worker URL
-const captchaVerifierUrl = import.meta.env.VITE_BACKEND_URL 
+const captchaVerifierUrl = import.meta.env.VITE_BACKEND_URL || 'https://captcha-verifier.rio-yudayanto244.workers.dev/'
 const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY // Use your actual site key
+
+// Additional config to help with PAT issues
+const turnstileConfig = {
+  retry: 'auto',        // Automatically retry on failure
+  retryInterval: 8000,  // Wait 8 seconds between retries
+  refreshExpired: 'auto',  // Auto refresh expired tokens
+  appearance: 'always' as 'always' | 'execute' | 'interaction-only', // Always show the widget
+  size: 'normal' as 'normal' | 'flexible' | 'compact',       // Normal size widget
+  theme: 'light' as 'auto' | 'light' | 'dark',       // Light theme
+  tabindex: 0,          // Proper tabindex for accessibility
+  // Override for PAT-related issues
+  jsLibrary: 'recaptcha', // Use recaptcha compat mode which may avoid PAT issues
+  action: 'form_submit'   // Specific action name
+}
 
 const onVerified = (token: string) => {
   turnstileToken.value = token
@@ -80,6 +94,15 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   // Fix: Add return statement to prevent form submission when CAPTCHA is not verified
   if (!isCaptchaVerified.value) {
     captchaError.value = 'Please complete the CAPTCHA verification'
+    // Try to force reset the captcha widget in case it's stuck
+    try {
+      const turnstileReset = document.querySelector('[data-turnstile-reset]')
+      if (turnstileReset) {
+        (turnstileReset as HTMLElement).click()
+      }
+    } catch (e) {
+      console.error('Error resetting Turnstile:', e)
+    }
     return
   }
 
@@ -87,20 +110,37 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       try {
         isSubmitting.value = true
+        
         // Create form data with the turnstile token
         const formData = new FormData()
         formData.append('cf-turnstile-response', turnstileToken.value)
-
+        // Add other form data fields that your backend might need
         formData.append('name', ruleForm.name)
         formData.append('email', ruleForm.email)
         formData.append('region', ruleForm.region)
         formData.append('desc', ruleForm.desc)
         
         // Verify CAPTCHA token with Cloudflare Worker
-        const verifyResponse = await fetch(captchaVerifierUrl, {
-          method: 'POST',
-          body: formData, // Using FormData instead of JSON
-        });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        let verifyResponse;
+        try {
+          verifyResponse = await fetch(captchaVerifierUrl, {
+            method: 'POST',
+            body: formData, // Using FormData instead of JSON
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+        } catch (error) {
+          clearTimeout(timeoutId);
+          if ((error as Error).name === 'AbortError') {
+            captchaError.value = 'Verification request timed out. Please try again.';
+            isSubmitting.value = false;
+            return;
+          }
+          throw error;
+        }
         
         if (!verifyResponse.ok) {
           throw new Error(`Verification failed with status: ${verifyResponse.status}`);
@@ -150,6 +190,7 @@ const Notify_page = async (formEl: FormInstance | undefined) => {
     // Reset the Turnstile widget
     const turnstileWidget = document.querySelector('iframe[src*="challenges.cloudflare.com"]')
     if (turnstileWidget && turnstileWidget.parentNode) {
+      // Using Vue Turnstile's automatic reset - you can also force a reset if needed
     }
   }, 2300)
 }
@@ -205,16 +246,13 @@ const Notify_page = async (formEl: FormInstance | undefined) => {
     <!-- CAPTCHA -->
      <el-form-item label="Verification">
       <div class="captcha-container">
-        <vue-turnstile 
+        <VueTurnstile
           v-model="turnstileToken" 
           :site-key="siteKey" 
           @verified="onVerified" 
           @expired="onExpired" 
           @error="onError"
-          theme="light"
-          size="normal"
-          appearance="always"
-          refresh-expired="auto"
+          v-bind="turnstileConfig"
         />
         <div v-if="captchaError" class="captcha-error">{{ captchaError }}</div>
       </div>
@@ -267,6 +305,7 @@ const Notify_page = async (formEl: FormInstance | undefined) => {
   }
 }
 
+/* Move these out of the media query so they're always applied */
 .captcha-container{
   margin: 10px 0;
 }
