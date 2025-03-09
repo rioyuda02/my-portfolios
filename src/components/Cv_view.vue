@@ -1,6 +1,6 @@
 <template>
     <div class="form-container">
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleSubmit" class="form-in">
         <!-- Your form fields here -->
         <div class="form-group">
           <label for="NameofInsitusion">Name of Institution</label>
@@ -35,7 +35,9 @@
           />
         </div>
         <!-- Turnstile container -->
-        <div ref="turnstileContainer" class="turnstile-container"></div>
+         <div class="Auth">
+             <div ref="turnstileContainer" class="turnstile-container"></div>
+         </div>
         
         <button type="submit" :disabled="!turnstileToken">Request..</button>
         
@@ -88,7 +90,6 @@
     try {
       message.value = 'Submitting...'
       isError.value = false
-  
       // Create form data with the turnstile token
       const formData = new FormData()
       formData.append('Name of Institution', NameofInstitution.value)
@@ -161,20 +162,26 @@ const Notify_page = async () => {
   </script>
   
   <style scoped>
+  @media (min-width: 1024px) {
   .form-container {
-    max-width: 500px;
+    display: flex;
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    align-items: center;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0;
     border: 1px solid #ddd;
     border-radius: 8px;
   }
   
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
   }
+
   
   label {
-    display: block;
+    display: flex;
     margin-bottom: 5px;
     font-weight: bold;
   }
@@ -187,7 +194,7 @@ const Notify_page = async () => {
   }
   
   .turnstile-container {
-    margin: 20px 0;
+    margin: 14px 0;
   }
   
   button {
@@ -216,4 +223,65 @@ const Notify_page = async () => {
     background-color: #f8d7da;
     color: #721c24;
   }
+}
+@media (max-width: 1028px) {
+    .form-container {
+    display: flex;
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0;
+    border-radius: 8px;
+  }
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  
+  label {
+    display: flex;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .turnstile-container {
+    margin: 14px 0;
+  }
+  
+  button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+}
   </style>

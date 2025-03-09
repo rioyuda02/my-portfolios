@@ -35,6 +35,9 @@
 .dark .el-tour__body {
   color: teal!important;
 }
+.dark .form-group input{
+  color: var(--vt-c-white-soft);
+}
 /* End */
 
 .el-menu, .el-button {
@@ -42,6 +45,9 @@
 }
 .el-button{
   color: var(--color-text-link-1)!important;
+}
+.form-group input{
+  color: var(--vt-c-divider-dark-1);
 }
 
 #app {
