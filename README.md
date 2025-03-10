@@ -3,6 +3,7 @@
 Technology use:
 - Vite + React + Vue
 - Typescript
+- Javascript
 - Element-Plus
 - TailwindCSS
 - Yarn V1.22.22
