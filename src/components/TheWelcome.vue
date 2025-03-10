@@ -41,6 +41,7 @@ const tableData3 = [
 </script>
 
 <template>
+  <div class="main-Desc">
   <ProjectItem>
     <template #icon>
       <DocumentationIcon />
@@ -90,4 +91,5 @@ const tableData3 = [
     </li>
     <li><a href="https://www.instagram.com/rioyuda04/#" rel="noopener noreferrer">Instagram</a></li>
   </ProjectItem>
+  </div>
 </template>

@@ -50,6 +50,12 @@
   
   <script lang="ts" setup>
   import { ref, onMounted, onBeforeUnmount, h } from 'vue'
+  
+  declare global {
+    interface Window {
+      turnstile: any;
+    }
+  }
   import { ElNotification } from 'element-plus'
   
   const NameofInstitution = ref('')
